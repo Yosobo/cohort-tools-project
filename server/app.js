@@ -3,7 +3,13 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const PORT = 5005;
 
+// STATIC DATA
+// Devs Team - Import the provided files with JSON data of students and cohorts here:
+// ...
+const cohortsApi = require("./cohorts.json")
+const studentsApi = require("./students.json")
 
+// INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
 const cors = require("cors")
 
@@ -30,11 +36,23 @@ app.use(
 // Devs Team - Start working on the routes here:
 // ...
 app.get("/docs", (req, res) => {
-  res.sendFile(__dirname + "/views/docs.html");
+  res.sendFile(`${__dirname}/views/docs.html`);
 });
 
+app.get("/api/cohorts", (req, res) => {
+  res.json(cohortsApi)
+}),
 
-// START SERVER
-app.listen(PORT, () => {
-  console.log(`Server listening on port http://localhost:${PORT}`);
-});
+  app.get("/api/students", (req, res) => {
+    res.json(studentsApi)
+  }),
+
+
+
+
+
+
+  // START SERVER
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
