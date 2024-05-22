@@ -1,7 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const PORT = 5005;
+const PORT = 27017;
+const mongoose = require('mongoose')
 
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
@@ -30,8 +31,6 @@ app.use(
   })
 );
 
-
-
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
 // Devs Team - Start working on the routes here:
 // ...
@@ -39,20 +38,57 @@ app.get("/docs", (req, res) => {
   res.sendFile(`${__dirname}/views/docs.html`);
 });
 
-app.get("/api/cohorts", (req, res) => {
-  res.json(cohortsApi)
-}),
+mongoose
+  .connect("mongodb://127.0.0.1:27017/mongoose-example-dev")
+  .then(x => console.log(`Connected to Database: "${x.connections[0].name}"`))
+  .catch(err => console.error("Error connecting to MongoDB", err))
 
-  app.get("/api/students", (req, res) => {
-    res.json(studentsApi)
-  }),
+const cohortsSchema = new mongoose.Schema({
+  inProgress: Boolean,
+  cohortSlug: String,
+  cohortName: String,
+  program: String,
+  campus: String,
+  startDate: Date,
+  endDate: Date,
+  programManager: String,
+  leadTeacher: String,
+  totalHours: Number
+})
 
+const studentsSchema = new mongoose.Schema({
+  firstName: String,
+  lastName: String,
+  email: String,
+  phone: String,
+  linkedinUrl: String,
+  languages: [String],
+  program: String,
+  background: String,
+  image: String,
+  projects: [String],
+  cohort: mongoose.Types.ObjectId
+})
 
+const CohortModel = mongoose.model('cohort', cohortsSchema)
+const StudentModel = mongoose.model('student', studentsSchema)
 
+app.get('/api/cohorts', (req, res) => {
 
+  CohortModel
+    .find()
+    .then(allCohorts => res.json(allCohorts))
+    .catch(err => res.json({ code: 500, errorDetails: err }))
+})
 
+app.get('/api/students', (req, res) => {
 
-  // START SERVER
-  app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-  });
+  StudentModel
+    .find()
+    .then(allStudents => res.json(allStudents))
+    .catch(err => res.json({ code: 500, errorDetails: err }))
+})
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
