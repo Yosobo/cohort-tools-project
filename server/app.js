@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(
   cors({
     // Add the URLs of allowed origins to this array
-    origin: ['http://localhost:5173', 'http://example.com'],
+    origin: ['http://localhost:5005', 'http://example.com'],
 
   })
 );
