@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const PORT = 27017;
+const PORT = 5005;
 const mongoose = require('mongoose')
 
 // STATIC DATA
