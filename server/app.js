@@ -1,7 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-<<<<<<< HEAD
 const PORT = 5005;
 const mongoose = require('mongoose')
 
@@ -12,13 +11,11 @@ const cohortsApi = require("./cohorts.json")
 const studentsApi = require("./students.json")
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
-const app = express();
-=======
->>>>>>> 16204e5 (Miniproject done)
+const app = express()
 const cors = require("cors")
-const PORT = 5005;
 
-const app = express();
+
+
 
 app.use(express.json());
 app.use(morgan("dev"));
@@ -30,12 +27,8 @@ require('./db/database-connection')
 
 app.use(
   cors({
-<<<<<<< HEAD
     // Add the URLs of allowed origins to this array
     origin: ['http://localhost:5005', 'http://example.com'],
-=======
-    origin: ['http://localhost:5173', 'http://example.com'],
->>>>>>> 16204e5 (Miniproject done)
 
   })
 );
@@ -160,18 +153,29 @@ app.delete('/api/students/:studentId', (req, res) => {
 })
 
 
-app.delete('/api/cohorts/:cohortId', (req, res) => {
+app.delete('/api/cohorts/:cohortId', (req, res, next) => {
 
   const { cohortId } = req.params
 
   CohortModel
     .findByIdAndDelete(cohortId)
     .then(() => res.sendStatus(204))
-    .catch(err => res.json({ code: 500, errorDetails: err }))
+    .catch(err => { next(err) })
+
 })
 
 
+// Example - Custom Error Handling Middleware - next()
 
+
+const { errorHandler, notFoundHandler } = require("./middleware/error-handling");
+
+//  3. Set up custom error handling middleware:
+//      Note: The order of the error handlers is important! 
+//      Ensure that the error middleware is registered at the end, after all the other routes.
+//      The Not Found 404 middleware should be registered last, after all the other routes, but before the custom error handler.
+app.use(errorHandler);
+app.use(notFoundHandler);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
